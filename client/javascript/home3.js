@@ -37,10 +37,10 @@ class Circle {
 }
 
 
-  const centerDot = new Dot(ctx, centerX, centerY, 10, "white");
+  const centerDot = new Dot(ctx, centerX, centerY, 10, "transparent");
   centerDot.draw();
-  const circle = new Circle(centerX, centerY, 200, 5, "white");
-  circle.draw();
+  // const circle = new Circle(centerX, centerY, 200, 5, "white");
+  // circle.draw();
 
 
 
@@ -64,8 +64,8 @@ function moveDotBasedOnAngle(dot, center, angle, r, speed = 0.001, clockwise = t
 
 
 const movingDot = new Dot(ctx, 0, 0, 3, "white");
-const movingDot2 = new Dot(ctx, 0, 0, 3, "white");
-const movingDot3 = new Dot(ctx, 0, 0, 3, "white");
+const movingDot2 = new Dot(ctx, 0, 0, 3, "khaki");
+const movingDot3 = new Dot(ctx, 0, 0, 3, "orange");
 let angle1 = 0;
 let angle2 = 0;
 let angle3 = 0;
@@ -110,35 +110,44 @@ function createDisplay(top, left, text) {
   document.body.appendChild(display);
   return display;
 }
-const range = createRange(0, 200, 1, 100, "10px", "10px");
-const radiusDisplay = createDisplay("10px", "200px", "100");
-const speedRange = createRange(0, 0.1, 0.001, 0.03, "40px", "10px");
-const speedDisplay = createDisplay("40px", "200px", "0.03");
+const radius1Range = createRange(0, 200, 1, 100, "10px", "10px");
+const radius1Display = createDisplay("10px", "200px", "100");
+const speed1Range = createRange(0, 0.1, 0.001, 0.03, "40px", "10px");
+const speed1Display = createDisplay("40px", "200px", "0.03");
+const radius2Range = createRange(0, 200, 1, 50, "70px", "10px");
+const radius2Display = createDisplay("70px", "200px", "50");
 
-range.addEventListener("input", (e) => {
-  r1 = e.target.value;
-  speed1 = speedRange.value;
-  drawBackground();
-  radiusDisplay.textContent = r1;
-  speedDisplay.textContent = speed1;
-  const centerDot = new Dot(ctx, centerX, centerY, 10, "white");
-  centerDot.draw();
-  const circle = new Circle(centerX, centerY, 200, 5, "white");
-  circle.draw();
-  controlDotByRange();
+// range.addEventListener("input", (e) => {
+//   r1 = e.target.value;
+//   speed1 = speedRange.value;
+//   updateView();
+// })
+// speedRange.addEventListener("input", (e) => {
+//   speed1 = e.target.value;
+//   r1 = range.value;
+//   updateView();
+// })
+const inputDOMs = [radius1Range, speed1Range, radius2Range];
+inputDOMs.forEach((input) => {
+  input.addEventListener("input", (e) => {
+    r1 = radius1Range.value;
+    speed1 = speed1Range.value;
+    r2 = radius2Range.value;
+    updateView();
+  })
 })
-speedRange.addEventListener("input", (e) => {
-  speed1 = e.target.value;
-  r1 = range.value;
+
+function updateView(){
   drawBackground();
-  radiusDisplay.textContent = r1;
-  speedDisplay.textContent = speed1;
-  const centerDot = new Dot(ctx, centerX, centerY, 10, "white");
-  centerDot.draw();
-  const circle = new Circle(centerX, centerY, 200, 5, "white");
-  circle.draw();
+  radius1Display.textContent = r1;
+  speed1Display.textContent = speed1;
+  radius2Display.textContent = r2;
+  // const centerDot = new Dot(ctx, centerX, centerY, 10, "white");
+  // centerDot.draw();
+  // const circle = new Circle(centerX, centerY, 200, 5, "white");
+  // circle.draw();
   controlDotByRange();
-})
+}
 
 function controlDotByRange (){
 
