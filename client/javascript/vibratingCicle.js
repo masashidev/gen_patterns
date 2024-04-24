@@ -23,15 +23,22 @@ for(let i = 0; i < 300; i++) {
   // const r = 200- (i * (Math.random()*0.2+1)) * 0.5;
   // const r =  i%30*10;
   // const r = Math.log(i+1) * 40
-  let r = 0;
-  if(i % 2 === 0){
-     r = i;
-  } else {
-     r = i;
-  }
+  let r = i;
+  // if(i % 2 === 0){
+  //    r = i
+  // } else {
+  //    r = i;
+  // }
   // const x = centerX + Math.cos(i*0.3) * r + (300 - i);
-  const x = centerX + Math.cos(i*0.3) * r;
-  const y = centerY + Math.sin(i*0.3) * r;
+
+  // const x = centerX + Math.cos(i*0.1) * r;
+  // const y = centerY + Math.sin(i*0.1) * r;
+
+  // const x = centerX + Math.cos(10000/i) * r;
+  // const y = centerY + Math.sin(10000/i) * r;
+
+  const x = centerX + Math.cos(300-i%10) * r;
+  const y = centerY + Math.sin(300-i%10) * r;
   const dot = new Dot(ctx, x, y, 3, "white");
   dots.push(dot);
 }
@@ -66,5 +73,6 @@ function drawEdge(){
   }
 }
 dots.forEach(dot => dot.draw());
-drawEdge();
+ drawEdge();
+
 // animate();
