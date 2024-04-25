@@ -37,8 +37,15 @@ for(let i = 0; i < 300; i++) {
   // const x = centerX + Math.cos(10000/i) * r;
   // const y = centerY + Math.sin(10000/i) * r;
 
-  const x = centerX + Math.cos(300-i%10) * r;
-  const y = centerY + Math.sin(300-i%10) * r;
+  // const x = centerX + Math.cos(300-i%10) * r;
+  // const y = centerY + Math.sin(300-i%10) * r;
+
+  // const x = centerX + Math.cos(i*0.9) * 100
+  // const y = i % 2 === 0 ? i : height - i;
+
+  const x = i * 2 * (Math.random()*0.04+1)
+  const y = centerY + Math.sin(i * 0.2) * 100*i/300;
+
   const dot = new Dot(ctx, x, y, 3, "white");
   dots.push(dot);
 }
