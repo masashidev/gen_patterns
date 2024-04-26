@@ -1,5 +1,6 @@
 import { Dot } from "./dots/dotClass.js";
 import { Circle } from "./circle/circleClass.js";
+import { Edge } from "./lines/lineClass.js";
 
 const canvas = document.getElementById("canvas");
 
@@ -34,24 +35,49 @@ class Line {
   }
 }
 
-const dot = new Dot(ctx, width / 2, height / 2, 10, "white");
+const dot = new Dot(ctx, width / 2, height / 2, 4, "white");
 
-let velocity = 0;
-let y = 150;
-let restLength = 100;
-let k = 0.01;
+let y = height/2 - 100;
+let restLengthY = height/2;
+let velocityY = 0;
+let kY = 0.01;
+let displacementY = y - restLengthY;
+let forceY = -kY * displacementY;
+
+let x = width/2 - 0;
+let restLengthX = width/2;
+let velocityX = 0;
+let kX = 0.01;
+let displacementX = x - restLengthX;
+let forceX = -kX * displacementX;
 
 function animate(){
   drawBackground();
-  let displacement = y - restLength;
-  console.log("displacement:" + displacement);
-  let force = -k * displacement;
+  displacementY = y - restLengthY
+  forceY = -kY * displacementY;
+  displacementX = x - restLengthX
+  forceX = -kX * displacementX;
   dot.y = y;
+  dot.x = x;
   dot.draw();
-  // velocity += force
-  y += force;
-  requestAnimationFrame(animate);
+  velocityY += forceY;
+  y += velocityY;
+  velocityY *= 0.99;
 
+  velocityX += forceX;
+  x += velocityX;
+  velocityX *= 0.99;
+  requestAnimationFrame(animate);
 }
 
 // animate();
+
+canvas.addEventListener("mousemove", (e) => {
+  const rect = canvas.getBoundingClientRect();
+  restLengthX = e.clientX - rect.left;
+  restLengthY = e.clientY - rect.top;
+})
+
+window.addEventListener("click", () => {
+  velocityX += 10;
+})
