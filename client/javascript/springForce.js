@@ -1,83 +1,95 @@
-import { Dot } from "./dots/dotClass.js";
-import { Circle } from "./circle/circleClass.js";
-import { Edge } from "./lines/lineClass.js";
+class Dot {
+  constructor(ctx, x, y, radius, color) {
+    this.ctx = ctx;
+    this.x = x;
+    this.y = y;
+    this.radius = radius;
+    this.color = color;
+    this.velocityX = 0;
+    this.velocityY = 0;
+  }
 
+  draw() {
+    this.ctx.fillStyle = this.color;
+    this.ctx.beginPath();
+    this.ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+    this.ctx.fill();
+  }
+
+  applyForce(forceX, forceY) {
+    this.velocityX += forceX;
+    this.velocityY += forceY;
+  }
+
+  update() {
+    this.x += this.velocityX;
+    this.y += this.velocityY;
+    this.velocityX *= 0.99; // damping
+    this.velocityY *= 0.99; // damping
+  }
+}
+
+class Spring {
+  constructor(dot1, dot2, restLength, k) {
+    this.dot1 = dot1;
+    this.dot2 = dot2;
+    this.restLength = restLength;
+    this.k = k;
+  }
+
+  apply() {
+    let dx = this.dot1.x - this.dot2.x;
+    let dy = this.dot1.y - this.dot2.y;
+    let distance = Math.sqrt(dx * dx + dy * dy);
+    let forceMagnitude = this.k * (distance - this.restLength);
+    let forceX = forceMagnitude * (dx / distance);
+    let forceY = forceMagnitude * (dy / distance);
+
+    this.dot1.applyForce(-forceX, -forceY);
+    this.dot2.applyForce(forceX, forceY);
+  }
+}
+
+// Setup canvas and context
 const canvas = document.getElementById("canvas");
-
 const ctx = canvas.getContext("2d");
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
 
-const width = (canvas.width = window.innerWidth);
-const height = (canvas.height = window.innerHeight);
+
+
+// Initialize dots
+const mouseDot = new Dot(ctx, 0, 0, 0, "white");
+const dot1 = new Dot(ctx, canvas.width / 2, canvas.height / 2, 4, "white");
+const dot2 = new Dot(ctx, dot1.x - 10, dot1.y - 10, 4, "red");
+
+const spring = new Spring(mouseDot, dot1, 10, 0.006);
+const spring2 = new Spring(dot1, dot2, 10, 0.006);
 
 function drawBackground() {
   ctx.fillStyle = "black";
-  ctx.fillRect(0, 0, width, height);
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
 }
 
-drawBackground();
-
-class Line {
-  constructor(x1, y1, x2, y2, width, color) {
-    this.x1 = x1;
-    this.y1 = y1;
-    this.x2 = x2;
-    this.y2 = y2;
-    this.width = width;
-    this.color = color;
-  }
-  draw() {
-    ctx.beginPath();
-    ctx.moveTo(this.x1, this.y1);
-    ctx.lineTo(this.x2, this.y2);
-    ctx.strokeStyle = this.color;
-    ctx.lineWidth = this.width;
-    ctx.stroke();
-  }
-}
-
-const dot = new Dot(ctx, width / 2, height / 2, 4, "white");
-
-let y = height/2 - 100;
-let restLengthY = height/2;
-let velocityY = 0;
-let kY = 0.01;
-let displacementY = y - restLengthY;
-let forceY = -kY * displacementY;
-
-let x = width/2 - 0;
-let restLengthX = width/2;
-let velocityX = 0;
-let kX = 0.01;
-let displacementX = x - restLengthX;
-let forceX = -kX * displacementX;
-
-function animate(){
+function animate() {
   drawBackground();
-  displacementY = y - restLengthY
-  forceY = -kY * displacementY;
-  displacementX = x - restLengthX
-  forceX = -kX * displacementX;
-  dot.y = y;
-  dot.x = x;
-  dot.draw();
-  velocityY += forceY;
-  y += velocityY;
-  velocityY *= 0.99;
-
-  velocityX += forceX;
-  x += velocityX;
-  velocityX *= 0.99;
+  spring.apply();
+  spring2.apply();
+  dot1.update();
+  dot2.update();
+  dot1.draw();
+  dot2.draw();
   requestAnimationFrame(animate);
 }
 
-// animate();
+animate();
 
 canvas.addEventListener("mousemove", (e) => {
   const rect = canvas.getBoundingClientRect();
-  restLengthX = e.clientX - rect.left;
-  restLengthY = e.clientY - rect.top;
-})
+  mouseDot.x = e.clientX - rect.left;
+  mouseDot.y = e.clientY - rect.top;
+});
 
 window.addEventListener("click", () => {
-  velocityX += 10;
-})
+  dot1.velocityX += 10; // Impulse on click
+});
