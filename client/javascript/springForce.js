@@ -61,10 +61,12 @@ canvas.height = window.innerHeight;
 // Initialize dots
 const mouseDot = new Dot(ctx, 0, 0, 0, "white");
 const dot1 = new Dot(ctx, canvas.width / 2, canvas.height / 2, 4, "white");
-const dot2 = new Dot(ctx, dot1.x - 10, dot1.y - 10, 4, "red");
+const dot2 = new Dot(ctx, canvas.width / 2, canvas.height / 2, 4, "red");
+const dot3 = new Dot(ctx, canvas.width / 2, canvas.height / 2, 4, "yellow");
 
-const spring = new Spring(mouseDot, dot1, 10, 0.006);
-const spring2 = new Spring(dot1, dot2, 10, 0.006);
+const spring = new Spring(mouseDot, dot1, 5, 0.006);
+const spring2 = new Spring(dot1, dot2, 5, 0.006);
+const spring3 = new Spring(dot1, dot3, 5, 0.006);
 
 function drawBackground() {
   ctx.fillStyle = "black";
@@ -75,10 +77,13 @@ function animate() {
   drawBackground();
   spring.apply();
   spring2.apply();
+  spring3.apply();
   dot1.update();
   dot2.update();
+  dot3.update();
   dot1.draw();
   dot2.draw();
+  dot3.draw();
   requestAnimationFrame(animate);
 }
 
