@@ -213,7 +213,36 @@ class Button {
   }
 }
 
+class Display {
+  constructor(ctx, x, y, width, height, color, text) {
+    this.ctx = ctx;
+    this.x = x;
+    this.y = y;
+    this.width = width;
+    this.height = height;
+    this.color = color;
+    this.text = text;
+  }
 
+  draw() {
+    this.ctx.fillStyle = this.color;
+    this.ctx.fillRect(this.x, this.y, this.width, this.height);
+    this.ctx.fillStyle = "black";
+    this.ctx.font = "20px Arial";
+    this.ctx.textAlign = "center";
+    this.ctx.textBaseline = "middle";
+    this.ctx.fillText(this.text, this.x + this.width / 2, this.y + this.height / 2);
+  }
+
+  updateText(newText) {
+    this.text = newText;
+  }
+
+  isClicked(x, y) {
+    return x >= this.x && x <= this.x + this.width && y >= this.y && y <= this.y + this.height;
+  }
+
+}
 const grid = new Grid(ctx, 50, "rgba(0, 0, 0, 0.1)");
 grid.draw();
 const dot = new Dot(ctx, 100, 100, 10, "red");
@@ -222,7 +251,9 @@ const dot2 = new Dot(ctx, 300, 100, 10, "orange");
 const player = new Player(ctx, 100, 100, 10, "blue");
 player.placeWhenClicked();
 
-const button = new Button(ctx, 100, 100, 100, 50, "red", "Click me");
+const display = new Display(ctx, 200, 100, 100, 50, "gray", "Click me");
+display.draw();
+const button = new Button(ctx, 100, 100, 100, 50, "gray", "Click me");
 button.draw();
 
 
@@ -232,10 +263,10 @@ let continueAnimation = true;
 let duration = 1000;
 let myReq = null;
 function animate(timestamp){
-  if (!startTime) {
-    startTime = timestamp;
-  }
-  const elapsedTime = timestamp - startTime;
+  // if (!startTime) {
+  //   startTime = timestamp;
+  // }
+  // const elapsedTime = timestamp - startTime;
 
 
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -247,12 +278,12 @@ function animate(timestamp){
 
   player.draw();
 
-  // if (timestamp / 2000 >= 1) {
+  // if (timestamp % 1000 < 500) {
   //   player.moveToNextCellAtRandomDirection();
   //   dot2.moveToRandomCoordinate();
 
   // }
-
+  display.draw();
 
   if (continueAnimation) {
     myReq = requestAnimationFrame(animate);
@@ -260,10 +291,19 @@ function animate(timestamp){
 }
 
 // myReq = requestAnimationFrame(animate);
+// requestAnimationFrame(animate);
 
+let displayClicked = false;
 canvas.addEventListener("click", (event) => {
-  cancelAnimationFrame(myReq);
+  if (display.isClicked(event.clientX, event.clientY)) {
+    displayClicked = true;
+    display.updateText("Clicked");
+  } else {
+    displayClicked = false;
+    display.updateText("Click me");
+  }
 })
+
 
 
 // window.addEventListener("keydown", (e) => {
