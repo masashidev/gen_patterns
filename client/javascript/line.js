@@ -52,6 +52,18 @@ class Dot {
       ctx.fillText(this.text, this.x - 10, this.y + 10);
     }
   }
+
+  connectLine(dot) {
+    drawLine(this.x, this.y, dot.x, dot.y, 2);
+  }
+
+  getDistance(dot) {
+    return Math.sqrt((this.x - dot.x) ** 2 + (this.y - dot.y) ** 2);
+  }
+
+  isSamePosition(dot) {
+    return this.x === dot.x && this.y === dot.y;
+  }
 }
 
 class Line {
@@ -132,6 +144,17 @@ function addNewDotWithAngle(){
   x += Math.cos(angle) * dotDistance;
   y += Math.sin(angle) * dotDistance;
   directDotInfinitely();
+  let tryAmount = 10
+  dots.forEach(dot => {
+    while(dot.getDistance(new Dot(x, y, 4, "white")) < 10 && tryAmount > 0){
+      angle = getRandomAngle();
+      x += Math.cos(angle) * dotDistance;
+      y += Math.sin(angle) * dotDistance;
+      directDotInfinitely();
+      tryAmount -= 1;
+      console.log("tryAmount", tryAmount);
+    }
+  })
   const dot = new Dot(x, y, 4, "white");
   dots.push(dot);
 }
@@ -152,26 +175,43 @@ function drawDots(){
     dot.draw();
   })
 }
+function drawLine(x, y, x2, y2, width){
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+  ctx.lineTo(x2, y2);
+  ctx.strokeStyle = "white";
+  ctx.lineWidth = width;
+  ctx.stroke();
+}
 
 function drawLines(){
   dots.forEach((dot, index) => {
     const nextDot = dots[index + 1];
-    if (nextDot) {
-      const line = new Line(dot.x, dot.y, nextDot.x, nextDot.y, 2);
-      lines.push(line);
-      if(line.getLength() < 50){
-        line.draw();
-      }
+    if (nextDot && dot.getDistance(nextDot) < 50) {
+      dot.connectLine(nextDot);
     }
-  })
-}
+})}
+
+// function drawLines(){
+//   dots.forEach((dot, index) => {
+//     const nextDot = dots[index + 1];
+//     if (nextDot) {
+//       const line = new Line(dot.x, dot.y, nextDot.x, nextDot.y, 2);
+//       lines.push(line);
+//       if(line.getLength() < 50){
+//         line.draw();
+//       }
+//     }
+//   })
+// }
 
 function directDotInfinitely(){
   if(x < 0){
     x = canvas.width;
   } else if(x > canvas.width){
     x = 0;
-  } else if(y < 0){
+  }
+  if(y < 0){
     y = canvas.height;
   } else if(y > canvas.height){
     y = 0;
@@ -202,10 +242,10 @@ function animation(timestamp){
     dots.shift();
   }
 
-  drawLines();
   drawDots();
+  drawLines();
 
   requestAnimationFrame(animation);
 }
 
-requestAnimationFrame(animation);
+// requestAnimationFrame(animation);
