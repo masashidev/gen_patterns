@@ -140,11 +140,14 @@ const dotAmount = 50
 const r = 100;
 let newAngle = 0;
 let newAngle2 = 0;
-const baseAngle = Math.PI * 2 / dotAmount;
+const baseAngle = Math.PI * 2 / (dotAmount);
 const dotIndexShift = 20;
 
 const leftCenter = {x: center.x - 200, y: center.y}
 const rightCenter = {x: center.x + 200, y: center.y}
+
+let randomSpeed = 0
+let randomAcc = 0
 
 function createDotsInCircle(dots,centerX, centerY, radius, dotAmount){
   for(let i = 0; i < dotAmount; i++){
@@ -158,8 +161,8 @@ function createDotsInCircle(dots,centerX, centerY, radius, dotAmount){
 
 function updateDots(dots, center, newAngle = 0){
   dots.forEach((dot, index) => {
-    dot.x = center.x + Math.cos(newAngle + (baseAngle * index)) * r;
-    dot.y = center.y + Math.sin(newAngle + (baseAngle * index)) * r;
+    dot.x = center.x + Math.cos(newAngle + (baseAngle * (index))) * (r * Math.sin(newAngle));
+    dot.y = center.y + Math.sin(newAngle + (baseAngle * index)) * (r + randomSpeed);
   })
 }
 function drawDots(dots){
@@ -182,9 +185,12 @@ function animation(timestamp) {
   drawDots(dots)
   drawDots(dots2)
   drawLinesBetweenArray(dots, dots2);
-  newAngle += 0.01;
-  newAngle2 = 0.04;
+  const randomAngle = Math.random() * 0.01
+  newAngle += randomAngle;
+  newAngle2 -= 0.01;
+  // randomAcc = Math.random() * 5 - 2.5
+  // randomSpeed += randomAcc
   requestAnimationFrame(animation);
 }
 
-requestAnimationFrame(animation);
+//  requestAnimationFrame(animation);
