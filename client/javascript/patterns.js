@@ -273,6 +273,7 @@ let looping = false;
 canvas.addEventListener("click", ()=>{
   if(!looping) {
     drawBackground();
+    grid.emptyAll();
     grid.fillRandomlyAll();
     cellIndex = 0;
     looping = true;

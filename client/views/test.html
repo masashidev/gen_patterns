@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smooth Heat Map</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f0f0f0;
+        }
+        canvas {
+            border: 1px solid black;
+            margin-top: 10px;
+        }
+    </style>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+
+</head>
+<body>
+    <canvas id="canvas" width="600" height="600"></canvas>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        const rows = 60; // Increase the number of rows for smoother transitions
+        const cols = 60; // Increase the number of columns for smoother transitions
+        const cellSize = 10;
+
+        // Generate a random 2D array
+        const data = Array.from({ length: rows }, () =>
+            Array.from({ length: cols }, () => Math.random())
+        );
+
+        // Function to get color based on value using d3 color scale
+        function getColor(value) {
+            return d3.interpolateViridis(value);
+        }
+
+        // Draw the smooth heat map
+        function drawSmoothHeatMap() {
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < cols; col++) {
+                    const value = data[row][col];
+                    ctx.fillStyle = getColor(value);
+                    ctx.fillRect(col * cellSize, row * cellSize, cellSize, cellSize);
+                }
+            }
+        }
+
+        drawSmoothHeatMap();
+    </script>
+</body>
+</html>
