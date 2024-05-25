@@ -254,6 +254,7 @@ const gridData = grid.cells;
 let cellIndex = 0
 function loop(timestamp) {
   if(cellIndex >= row * col) {
+    looping = false;
     return;
   }
   if(grid.cells[Math.floor(cellIndex / row)][cellIndex % row] === 1) {
@@ -266,4 +267,16 @@ function loop(timestamp) {
   requestAnimationFrame(loop);
 }
 
-requestAnimationFrame(loop);
+
+
+let looping = false;
+canvas.addEventListener("click", ()=>{
+  if(!looping) {
+    drawBackground();
+    grid.fillRandomlyAll();
+    cellIndex = 0;
+    looping = true;
+    loop();
+  }
+}
+)
