@@ -117,6 +117,20 @@ class PatternGrid {
       }
     }
   }
+
+  shuffle(){
+    for (let i = 0; i < this.row; i++) {
+      for (let j = 0; j < this.col; j++) {
+        const randomX = Math.floor(Math.random() * this.row);
+        const randomY = Math.floor(Math.random() * this.col);
+        const temp = this.cells[i][j];
+        this.cells[i][j] = this.cells[randomX][randomY];
+        this.cells[randomX][randomY] = temp;
+      }
+    }
+  }
+
+
   drawOneCell(x, y, color) {
     this.drawRect(
       this.ctx,
@@ -218,6 +232,23 @@ function createNewGrid(x, y, row, col, cellSize, color) {
   return grid;
 }
 
+function fillArrayWithIndices(size){
+  const returnArray = [];
+  for(let i = 0; i < size; i++) {
+    returnArray.push(i);
+  }
+  return returnArray;
+}
+function shuffle(array) {
+  for(let i = 0; i < array.length; i++) {
+    const randomIndex = Math.floor(Math.random() * array.length);
+    const temp = array[i];
+    array[i] = array[randomIndex];
+    array[randomIndex] = temp;
+  }
+  return array;
+}
+
 function setup() {
   // for(let i = 0; i < 8; i++) {
   //   for(let j = 0; j <20; j++) {
@@ -245,21 +276,27 @@ function setup() {
 
 const x = 20;
 const y = 20;
-const row = 30;
-const col = 30;
-const cellSize = 9;
-const grid = new PatternGrid(ctx, x, y, row, col, cellSize, "white");
+const rowSize = 50;
+const colSize = 50;
+const cellSize = 5;
+const grid = new PatternGrid(ctx, x, y, rowSize, colSize, cellSize, "white");
 grid.fillRandomlyAll();
 const gridData = grid.cells;
 let cellIndex = 0
+let cellIndices = fillArrayWithIndices(rowSize * colSize);
+cellIndices = shuffle(cellIndices);
+
 function loop(timestamp) {
-  if(cellIndex >= row * col) {
+  if(cellIndex >= rowSize * colSize) {
     looping = false;
     return;
   }
-  if(grid.cells[Math.floor(cellIndex / row)][cellIndex % row] === 1) {
-  grid.drawOneCell(cellIndex % row, Math.floor(cellIndex / row), "white");
-  cellIndex += 1;
+  const randomIndex = cellIndices[cellIndex];
+  const row = Math.floor(randomIndex / rowSize);
+  const col = randomIndex % rowSize;
+  if(grid.cells[col][row] === 1) {
+    grid.drawOneCell(col, row, "white");
+    cellIndex += 1;
   } else {
     cellIndex += 1;
   }
@@ -268,13 +305,14 @@ function loop(timestamp) {
 }
 
 
-
 let looping = false;
 canvas.addEventListener("click", ()=>{
   if(!looping) {
     drawBackground();
     grid.emptyAll();
     grid.fillRandomlyAll();
+    grid.copyLeftToRight();
+    grid.copyTopToBottom();
     cellIndex = 0;
     looping = true;
     loop();
