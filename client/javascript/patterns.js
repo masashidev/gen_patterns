@@ -286,20 +286,24 @@ let cellIndex = 0
 let cellIndices = fillArrayWithIndices(rowSize * colSize);
 cellIndices = shuffle(cellIndices);
 
+const batchSize = 30;
+
 function loop(timestamp) {
   if(cellIndex >= rowSize * colSize) {
     looping = false;
     return;
   }
-  const randomIndex = cellIndices[cellIndex];
-  const row = Math.floor(randomIndex / rowSize);
-  const col = randomIndex % rowSize;
-  if(grid.cells[col][row] === 1) {
-    grid.drawOneCell(col, row, "white");
-    cellIndex += 1;
-  } else {
-    cellIndex += 1;
+
+  const endIndex = Math.min(cellIndex + batchSize, rowSize * colSize);
+  for(; cellIndex < endIndex; cellIndex++) {
+    const randomIndex = cellIndices[cellIndex];
+    const row = Math.floor(randomIndex / rowSize);
+    const col = randomIndex % rowSize;
+    if(grid.cells[col][row] === 1) {
+      grid.drawOneCell(col, row, "white");
+    }
   }
+
 
   requestAnimationFrame(loop);
 }
