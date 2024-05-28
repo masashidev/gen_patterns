@@ -5,7 +5,7 @@ const body = document.querySelector("body");
 body.style.backgroundColor = "black";
 
 canvas.width = window.innerWidth - 20;
-canvas.height = 4000
+canvas.height = window.innerHeight - 20;
 canvas.style.border = "1px solid white";
 canvas.style.margin = "10px auto";
 
@@ -34,6 +34,10 @@ function drawLine(ctx, x1, y1, x2, y2, color = "black") {
   ctx.moveTo(x1, y1);
   ctx.lineTo(x2, y2);
   ctx.stroke();
+}
+
+function drawImage(ctx, image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight) {
+  ctx.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
 }
 class PatternGrid {
   constructor(ctx, x, y, row, col, cellSize, color) {
@@ -141,6 +145,15 @@ class PatternGrid {
       color
     );
   }
+  clearOneCell(x, y) {
+    this.clearRect(
+      this.ctx,
+      x * this.cellSize + this.x,
+      y * this.cellSize + this.y,
+      this.cellSize,
+      this.cellSize
+    );
+  }
 
   draw() {
     this.cells.forEach((row, i) => {
@@ -177,6 +190,9 @@ class PatternGrid {
     ctx.beginPath();
     ctx.fillStyle = color;
     ctx.fillRect(x, y, width, height);
+  }
+  clearRect(ctx, x, y, width, height) {
+    ctx.clearRect(x, y, width, height);
   }
   drawLine(x1, y1, x2, y2, color = "black") {
     ctx.strokeStyle = color;
@@ -276,17 +292,33 @@ function setup() {
 
 const x = 20;
 const y = 20;
-const rowSize = 50;
-const colSize = 50;
-const cellSize = 5;
-const grid = new PatternGrid(ctx, x, y, rowSize, colSize, cellSize, "white");
-grid.fillRandomlyAll();
-const gridData = grid.cells;
+let rowSize = 200;
+let colSize = 200;
+let cellSize = 4;
+let grid;
+let gridWidth = rowSize * cellSize;
+let gridHeight = colSize * cellSize;
 let cellIndex = 0
 let cellIndices = fillArrayWithIndices(rowSize * colSize);
 cellIndices = shuffle(cellIndices);
 
-const batchSize = 30;
+const batchSize = 500;
+
+const image  = new Image();
+image.src = "/client/assets/landscape.jpg"
+let imageRatio = null
+image.onload = () => {
+  imageRatio = image.width / image.height;
+  console.log(image.width + " : " + image.height + " : " + imageRatio);
+  gridWidth = image.width;
+  gridHeight = image.height;
+  cellSize = 4;
+  rowSize = Math.floor(gridWidth / cellSize);
+  colSize = Math.floor(gridHeight / cellSize);
+  grid = new PatternGrid(ctx, x, y, rowSize, colSize, cellSize, "white");
+
+}
+
 
 function loop(timestamp) {
   if(cellIndex >= rowSize * colSize) {
@@ -294,13 +326,15 @@ function loop(timestamp) {
     return;
   }
 
+
   const endIndex = Math.min(cellIndex + batchSize, rowSize * colSize);
   for(; cellIndex < endIndex; cellIndex++) {
     const randomIndex = cellIndices[cellIndex];
     const row = Math.floor(randomIndex / rowSize);
     const col = randomIndex % rowSize;
     if(grid.cells[col][row] === 1) {
-      grid.drawOneCell(col, row, "white");
+      // grid.clearOneCell(col, row, "white");
+      drawImage(ctx, image, col * cellSize, row * cellSize, cellSize, cellSize, x + col * cellSize, y + row * cellSize, cellSize, cellSize);
     }
   }
 
