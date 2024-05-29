@@ -1,0 +1,244 @@
+<head>
+<!DOCTYPE HTML>
+<style>
+
+html{
+	margin: 0;
+	padding: 0;
+}
+body {
+	background-color: black;
+	color:white;
+	margin: 0;
+	padding: 0;
+}
+#position{
+	position: absolute;
+	top: 10px;
+	left: 10px;
+	border: 2px solid black;
+	border-radius: 5px;
+	padding: 2px;
+	margin: 0px;
+
+}
+
+
+
+
+</style>
+</head>
+
+
+<body>
+
+<h1 id = "position"><></h1>
+<canvas id="canvas"></canvas>
+
+<script>
+
+const canvas = document.getElementById("canvas")
+const ctx = canvas.getContext("2d")
+
+canvas.width  = document.documentElement.clientWidth
+canvas.height = document.documentElement.clientHeight
+canvas.style.border = "2px solid white"
+
+function drawBackground(){
+	ctx.beginPath()
+	ctx.fillStyle = "black"
+	ctx.fillRect(0, 0, canvas.width, canvas.height)
+}
+
+function drawLine(fromX, fromY, toX, toY){
+	ctx.beginPath()
+	ctx.moveTo(fromX, fromY)
+	ctx.fill()
+}
+function drawPoint(x, y, size){
+	ctx.beginPath()
+	ctx.fillStyle = "white"
+	ctx.arc(x, y, size, 0, Math.PI*2)
+	ctx.fill()
+}
+function drawPoints(points){
+	for(let i=0; i<points.length; i++){
+		drawPoint(points[i].x, points[i].y, 2)
+}
+}
+
+function drawArrow(x, y, direction, r){
+	ctx.beginPath()
+	ctx.lineWidth = 3
+	ctx.strokeStyle = "white"
+	ctx.moveTo(x, y)
+	ctx.lineTo(x + Math.cos(direction) * r, y + Math.sin(direction) * r)
+	ctx.stroke()
+
+}
+
+function addPoint(points, x, y){
+	points.push({x,y})
+}
+
+function addPointRandomly(points, width, height){
+	const padding = 30
+	const x = Math.random() * width + padding
+	const y = Math.random() * height + padding
+	points.push({x, y})
+}
+
+function getRandomTurnDirection(){
+	const random = Math.random()
+	if (random > 0.5){
+		return Math.PI/2
+	} else{
+		return Math.PI/2 * -1
+	}
+}
+
+function collisionWithEdge(x, y){
+	const newX = x
+	const newY = y
+	if(x < 0){
+		newX = canvas.width + x
+	} else if(canvas.width < x ){
+		const offset = x - canvas.width
+		newX = offset
+	}
+	if(y < 0){
+		newY = canvas.height + y
+	} else if(canvas.height < y ){
+		const offset = y - canvas.height
+		newY = offset
+	}
+	return {newX, newY}
+}
+function detectCollision(x, y){
+	if(x < 0 || canvas.width < x || y < 0 || canvas.height < y){
+		return true
+	} else{
+
+		return false
+	}
+}
+
+class Bird{
+	constructor(x, y ){
+
+		this.x = x
+		this.y = y
+		this.dx = canvas.width/2
+		this.dy = canvas.height/2
+		this.targetX = canvas.width/2
+		this.targetY = canvas.height/2
+    this.blownAwayToX = Math.random() * canvas.width
+    this.blownAwayToY = Math.random() * canvas.height
+    this.blownAwaySpeed = 0.1
+
+		this.speed = 10
+		this.directionAngle = Math.PI*2 * Math.random()
+		this.dAngle = 0
+		this.angleSpeed = 0.1
+		this.angleAcc = 0.1
+		this.size = 20
+		this.width = 3
+
+	}
+	draw(){
+		const tailX = this.x + Math.cos(this.directionAngle + Math.PI) * this.size
+		const tailY = this.y + Math.sin(this.directionAngle + Math.PI) * this.size
+		ctx.beginPath()
+		ctx.lineWidth = this.width
+		ctx.strokeStyle = "white"
+		ctx.moveTo(this.x, this.y)
+		ctx.lineTo(tailX, tailY)
+		ctx.stroke()
+	}
+	update(){
+		this.dx = this.targetX - this.x
+		this.dy = this.targetY - this.y
+		const targetAngle = Math.atan2(this.dy, this.dx)
+
+		this.dAngle = this.normalizeAngle(targetAngle - this.directionAngle)
+		this.directionAngle += this.dAngle * this.angleSpeed
+		this.x = this.x + Math.cos(this.directionAngle) * this.speed
+		this.y = this.y + Math.sin(this.directionAngle) * this.speed
+	}
+
+ normalizeAngle(angle) {
+    while (angle > Math.PI) angle -= 2 * Math.PI;
+    while (angle < -Math.PI) angle += 2 * Math.PI;
+    return angle;
+}
+
+	setTarget(targetX, targetY){
+		this.targetX = targetX
+		this.targetY = targetY
+
+	}
+
+  blownAway(){
+    const dx = this.blownAwayToX - this.x
+    const dy = this.blownAwayToY - this.y
+    this.x -= dx * this.blownAwaySpeed
+    this.y -= dy * this.blownAwaySpeed
+    if(this.blownAwaySpeed > 0.1){
+      this.blownAwaySpeed = 0.001
+      this.blownAwayToX = Math.random() * canvas.width
+      this.blownAwayToY = Math.random() * canvas.height
+    }
+  }
+}
+
+
+
+const points = []
+const birds = []
+const birdsAmount = 20
+
+function setup(){
+	for(let i=0; i<birdsAmount; i++){
+		const bird = new Bird(canvas.width/2, canvas.height/2)
+		birds.push(bird)
+	}
+
+	birds.forEach(bird=>{
+		bird.draw()
+	})
+}
+setup()
+
+let lastTime = 0
+let deltaTime = 3000
+function loop(timestamp){
+	drawBackground()
+	birds.forEach(bird=>{
+		bird.update()
+		bird.draw()
+	})
+
+  if(timestamp - lastTime > deltaTime){
+
+
+    lastTime = timestamp
+  }
+  if(timestamp - lastTime < 100){
+    birds.forEach(bird=>{
+      bird.blownAway()
+    })
+    console.log("blown away")
+  }
+
+
+	requestAnimationFrame(loop)
+}
+requestAnimationFrame(loop)
+
+canvas.addEventListener("mousemove", (e)=>{
+	birds.forEach(bird=>{
+		bird.setTarget(e.clientX, e.clientY)
+	})
+})
+</script>
+</body>

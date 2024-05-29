@@ -36,7 +36,18 @@ function drawLine(ctx, x1, y1, x2, y2, color = "black") {
   ctx.stroke();
 }
 
-function drawImage(ctx, image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight) {
+function drawImage(
+  ctx,
+  image,
+  sx,
+  sy,
+  sWidth,
+  sHeight,
+  dx,
+  dy,
+  dWidth,
+  dHeight
+) {
   ctx.drawImage(image, sx, sy, sWidth, sHeight, dx, dy, dWidth, dHeight);
 }
 class PatternGrid {
@@ -61,18 +72,18 @@ class PatternGrid {
   fillAll() {
     for (let i = 0; i < this.row; i++) {
       for (let j = 0; j < this.col; j++) {
-        this.cells[i][j] = 1
+        this.cells[i][j] = 1;
       }
     }
   }
   emptyAll() {
     for (let i = 0; i < this.row; i++) {
       for (let j = 0; j < this.col; j++) {
-        this.cells[i][j] = 0
+        this.cells[i][j] = 0;
       }
     }
   }
-  fillRandomlyAll(){
+  fillRandomlyAll() {
     for (let i = 0; i < this.row; i++) {
       for (let j = 0; j < this.col; j++) {
         if (Math.random() < this.fillRate) {
@@ -122,7 +133,7 @@ class PatternGrid {
     }
   }
 
-  shuffle(){
+  shuffle() {
     for (let i = 0; i < this.row; i++) {
       for (let j = 0; j < this.col; j++) {
         const randomX = Math.floor(Math.random() * this.row);
@@ -133,7 +144,6 @@ class PatternGrid {
       }
     }
   }
-
 
   drawOneCell(x, y, color) {
     this.drawRect(
@@ -171,20 +181,19 @@ class PatternGrid {
           j * this.cellSize + this.cellSize + this.y
         );
 
-       if(this.cells[i][j] === 1) {
-        this.drawRect(
-          this.ctx,
-          i * this.cellSize + this.x,
-          j * this.cellSize + this.y,
-          this.cellSize,
-          this.cellSize,
-          "white",
-        );
-       }
+        if (this.cells[i][j] === 1) {
+          this.drawRect(
+            this.ctx,
+            i * this.cellSize + this.x,
+            j * this.cellSize + this.y,
+            this.cellSize,
+            this.cellSize,
+            "white"
+          );
+        }
       });
     });
   }
-
 
   drawRect(ctx, x, y, width, height, color) {
     ctx.beginPath();
@@ -202,8 +211,6 @@ class PatternGrid {
     ctx.lineTo(x2, y2);
     ctx.stroke();
   }
-
-
 }
 
 function drawGrid(gridData, x, y, cellSize, color) {
@@ -211,11 +218,16 @@ function drawGrid(gridData, x, y, cellSize, color) {
   const height = gridData[0].length * cellSize;
   gridData.forEach((row, i) => {
     row.forEach((col, j) => {
-      if(gridData[i][j] === 1){
-        drawRect(ctx, x + i * cellSize, y + j * cellSize, cellSize, cellSize, color);
+      if (gridData[i][j] === 1) {
+        drawRect(
+          ctx,
+          x + i * cellSize,
+          y + j * cellSize,
+          cellSize,
+          cellSize,
+          color
+        );
       }
-
-
     });
   });
   for (let i = 0; i < gridData.length; i++) {
@@ -223,7 +235,6 @@ function drawGrid(gridData, x, y, cellSize, color) {
     drawLine(ctx, x, y + i * cellSize, x + width, y + i * cellSize, "black");
   }
 }
-
 
 function createNewGrid(x, y, row, col, cellSize, color) {
   const grid = new PatternGrid(ctx, x, y, row, col, cellSize, color);
@@ -237,8 +248,8 @@ function createNewGrid(x, y, row, col, cellSize, color) {
   // })
   const baseX = 0;
   const baseY = 0;
-  const halfX = Math.floor(row / 2)
-  const halfY = Math.floor(col / 2)
+  const halfX = Math.floor(row / 2);
+  const halfY = Math.floor(col / 2);
   grid.copyArea(baseX, baseY, halfX, halfY, halfX, halfY);
   grid.copyArea(0, 0, 0, halfY, halfX, halfY);
   grid.copyArea(0, 0, halfX, 0, halfX, halfY);
@@ -248,15 +259,15 @@ function createNewGrid(x, y, row, col, cellSize, color) {
   return grid;
 }
 
-function fillArrayWithIndices(size){
+function fillArrayWithIndices(size) {
   const returnArray = [];
-  for(let i = 0; i < size; i++) {
+  for (let i = 0; i < size; i++) {
     returnArray.push(i);
   }
   return returnArray;
 }
 function shuffle(array) {
-  for(let i = 0; i < array.length; i++) {
+  for (let i = 0; i < array.length; i++) {
     const randomIndex = Math.floor(Math.random() * array.length);
     const temp = array[i];
     array[i] = array[randomIndex];
@@ -285,8 +296,6 @@ function setup() {
   //     drawGrid(gridData, x + i * width, y + j * height, cellSize, "white");
   //   }
   // }
-
-
 }
 // setup();
 
@@ -298,15 +307,15 @@ let cellSize = 4;
 let grid;
 let gridWidth = rowSize * cellSize;
 let gridHeight = colSize * cellSize;
-let cellIndex = 0
+let cellIndex = 0;
 let cellIndices = fillArrayWithIndices(rowSize * colSize);
 cellIndices = shuffle(cellIndices);
 
 const batchSize = 500;
 
-const image  = new Image();
-image.src = "/client/assets/landscape.jpg"
-let imageRatio = null
+const image = new Image();
+image.src = "/client/assets/landscape.jpg";
+let imageRatio = null;
 image.onload = () => {
   imageRatio = image.width / image.height;
   console.log(image.width + " : " + image.height + " : " + imageRatio);
@@ -316,36 +325,42 @@ image.onload = () => {
   rowSize = Math.floor(gridWidth / cellSize);
   colSize = Math.floor(gridHeight / cellSize);
   grid = new PatternGrid(ctx, x, y, rowSize, colSize, cellSize, "white");
-
-}
-
+};
 
 function loop(timestamp) {
-  if(cellIndex >= rowSize * colSize) {
+  if (cellIndex >= rowSize * colSize) {
     looping = false;
     return;
   }
 
-
   const endIndex = Math.min(cellIndex + batchSize, rowSize * colSize);
-  for(; cellIndex < endIndex; cellIndex++) {
+  for (; cellIndex < endIndex; cellIndex++) {
     const randomIndex = cellIndices[cellIndex];
     const row = Math.floor(randomIndex / rowSize);
     const col = randomIndex % rowSize;
-    if(grid.cells[col][row] === 1) {
+    if (grid.cells[col][row] === 1) {
       // grid.clearOneCell(col, row, "white");
-      drawImage(ctx, image, col * cellSize, row * cellSize, cellSize, cellSize, x + col * cellSize, y + row * cellSize, cellSize, cellSize);
+      drawImage(
+        ctx,
+        image,
+        col * cellSize,
+        row * cellSize,
+        cellSize,
+        cellSize,
+        x + col * cellSize,
+        y + row * cellSize,
+        cellSize,
+        cellSize
+      );
     }
   }
-
 
   requestAnimationFrame(loop);
 }
 
-
 let looping = false;
-canvas.addEventListener("click", ()=>{
-  if(!looping) {
+canvas.addEventListener("click", () => {
+  if (!looping) {
     drawBackground();
     grid.emptyAll();
     grid.fillRandomlyAll();
@@ -355,5 +370,4 @@ canvas.addEventListener("click", ()=>{
     looping = true;
     loop();
   }
-}
-)
+});
