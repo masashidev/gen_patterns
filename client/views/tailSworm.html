@@ -167,8 +167,8 @@ class Bird{
   drawAnotherTail(){
     const delayedDirectionAngle = this.directionAngle - this.deltaDirectionAngle + Math.PI
 
-    const tailX = this.tailX + Math.cos(delayedDirectionAngle) * this.size
-    const tailY = this.tailY + Math.sin(delayedDirectionAngle) * this.size
+    const tailX = this.tailX + Math.cos(delayedDirectionAngle) * this.size * 0.5
+    const tailY = this.tailY + Math.sin(delayedDirectionAngle) * this.size * 0.5
     ctx.beginPath()
     ctx.lineWidth = this.width
     ctx.strokeStyle = "white"
@@ -223,7 +223,7 @@ class Bird{
 
   waveTail(time){
     const waveAngleWidth = Math.PI/30
-    const sinWave = Math.sin(time * 0.01 + this.randomAngle) * (waveAngleWidth/this.speed)
+    const sinWave = Math.sin(time * 0.01 + this.randomAngle) * (waveAngleWidth )
     this.directionAngle += sinWave
   }
 }
