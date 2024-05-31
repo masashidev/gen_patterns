@@ -148,6 +148,9 @@ class Bird{
 
     this.tailX = this.x + Math.cos(this.directionAngle + Math.PI) * this.size
     this.tailY = this.y + Math.sin(this.directionAngle + Math.PI) * this.size
+    this.previousTailX = this.tailX
+    this.previousTailY = this.tailY
+    this.deltaDirectionAngle = this.directionAngle
 
     this.randomAngle = Math.random() * Math.PI * 2
 
@@ -162,8 +165,10 @@ class Bird{
     this.drawAnotherTail()
 	}
   drawAnotherTail(){
-    const tailX = this.tailX + Math.sin(this.directionAngle + Math.PI) * this.size
-    const tailY = this.tailY + Math.cos(this.directionAngle + Math.PI) * this.size
+    const delayedDirectionAngle = this.directionAngle - this.deltaDirectionAngle + Math.PI
+
+    const tailX = this.tailX + Math.cos(delayedDirectionAngle) * this.size
+    const tailY = this.tailY + Math.sin(delayedDirectionAngle) * this.size
     ctx.beginPath()
     ctx.lineWidth = this.width
     ctx.strokeStyle = "white"
@@ -172,6 +177,8 @@ class Bird{
     ctx.stroke()
   }
 	update(){
+    const previousDirectionAngle = this.directionAngle
+
 		this.dx = this.targetX - this.x
 		this.dy = this.targetY - this.y
     this.tailX = this.x + Math.cos(this.directionAngle + Math.PI) * this.size
@@ -183,6 +190,11 @@ class Bird{
 		this.directionAngle += this.dAngle * this.angleSpeed
 		this.x = this.x + Math.cos(this.directionAngle) * this.speed
 		this.y = this.y + Math.sin(this.directionAngle) * this.speed
+
+    this.deltaDirectionAngle = this.normalizeAngle(this.directionAngle - previousDirectionAngle) * 6
+
+
+
 	}
 
  normalizeAngle(angle) {
