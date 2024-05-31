@@ -77,6 +77,7 @@ function drawArrow(x, y, direction, r){
 
 }
 
+
 function addPoint(points, x, y){
 	points.push({x,y})
 }
@@ -132,6 +133,7 @@ class Bird{
 		this.dy = canvas.height/2
 		this.targetX = canvas.width/2
 		this.targetY = canvas.height/2
+
     this.blownAwayToX = Math.random() * canvas.width
     this.blownAwayToY = Math.random() * canvas.height
     this.blownAwaySpeed = 0.1
@@ -144,22 +146,37 @@ class Bird{
 		this.size = 20
 		this.width = 3
 
+    this.tailX = this.x + Math.cos(this.directionAngle + Math.PI) * this.size
+    this.tailY = this.y + Math.sin(this.directionAngle + Math.PI) * this.size
+
     this.randomAngle = Math.random() * Math.PI * 2
 
 	}
 	draw(){
-		const tailX = this.x + Math.cos(this.directionAngle + Math.PI) * this.size
-		const tailY = this.y + Math.sin(this.directionAngle + Math.PI) * this.size
 		ctx.beginPath()
 		ctx.lineWidth = this.width
 		ctx.strokeStyle = "white"
 		ctx.moveTo(this.x, this.y)
-		ctx.lineTo(tailX, tailY)
+		ctx.lineTo(this.tailX, this.tailY)
 		ctx.stroke()
+    this.drawAnotherTail()
 	}
+  drawAnotherTail(){
+    const tailX = this.tailX + Math.sin(this.directionAngle + Math.PI) * this.size
+    const tailY = this.tailY + Math.cos(this.directionAngle + Math.PI) * this.size
+    ctx.beginPath()
+    ctx.lineWidth = this.width
+    ctx.strokeStyle = "white"
+    ctx.moveTo(this.tailX, this.tailY)
+    ctx.lineTo(tailX, tailY)
+    ctx.stroke()
+  }
 	update(){
 		this.dx = this.targetX - this.x
 		this.dy = this.targetY - this.y
+    this.tailX = this.x + Math.cos(this.directionAngle + Math.PI) * this.size
+    this.tailY = this.y + Math.sin(this.directionAngle + Math.PI) * this.size
+
 		const targetAngle = Math.atan2(this.dy, this.dx)
 
 		this.dAngle = this.normalizeAngle(targetAngle - this.directionAngle)
@@ -203,7 +220,7 @@ class Bird{
 
 const points = []
 const birds = []
-const birdsAmount = 20
+const birdsAmount = 1
 
 function setup(){
 	for(let i=0; i<birdsAmount; i++){
@@ -232,6 +249,9 @@ function loop(timestamp){
 
   if(timestamp - lastTime > deltaTime){
 
+    birds.forEach(bird=>{
+      bird.setTarget(Math.random() * canvas.width, Math.random() * canvas.height)
+    })
 
     lastTime = timestamp
   }
