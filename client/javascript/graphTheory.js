@@ -67,8 +67,8 @@ class App {
 
   drawRect(x, y, width, height, color) {
     this.ctx.beginPath();
-    this.ctx.fillStyle = color;
-    this.ctx.fillRect(x, y, width, height);
+    this.ctx.strokeStyle = color;
+    this.ctx.strokeRect(x, y, width, height);
   }
 
   drawLine(x1, y1, x2, y2, color = "black") {
@@ -94,15 +94,35 @@ class App {
     this.ctx.stroke();
   }
 
-  setup() {}
+  generateRect() {
+    this.rectX = Math.random() * this.canvas.width - this.width;
+    this.rectY = Math.random() * this.canvas.height - this.height;
+    this.width = Math.random() * 100;
+    this.height = Math.random() * 100;
+    this.drawRect(this.rectX, this.rectY, this.width, this.height, "white");
+  }
 
-  loop() {
-    this.drawBackground();
-    this.drawRect(100, 100, 100, 100, "white");
-    this.drawLine(this.center.x, this.center.y, this.x, this.y, "white");
-    this.drawDot(100, 100, 5, "white");
-    this.drawCircle(400, 100, 100, "white");
-    requestAnimationFrame(() => this.loop());
+  setup() {
+
+    this.rectX = Math.random() * this.canvas.width;
+    this.rectY = Math.random() * this.canvas.height;
+    this.width = Math.random() * 100;
+    this.height = Math.random() * 100;
+    this.lastTime = 0;
+    this.deltaTime = 1000;
+  }
+
+  loop(timestamp) {
+
+    if (timestamp - this.lastTime > this.deltaTime) {
+      // for (let i = 0; i < 10; i++) {
+      //   this.generateRect();
+      // }
+      this.drawBackground();
+      this.generateRect();
+      this.lastTime = timestamp;
+    }
+    requestAnimationFrame(this.loop);
   }
 }
 

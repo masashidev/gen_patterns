@@ -11,6 +11,9 @@ const center = {
 
 
 function setDisplayStyle(display, position, displaySize){
+  const columns = 3;
+  const rows = Math.ceil(variables.length / columns);
+
   display.style.width = displaySize.width + "px";
   display.style.height = displaySize.height + "px";
   display.style.position = "fixed";
@@ -20,9 +23,12 @@ function setDisplayStyle(display, position, displaySize){
   display.style.border = "1px solid white";
   display.style.borderRadius = "5px";
   display.style.padding = "10px";
+  display.style.fontSize = "10px";
   display.style.overflow = "scroll";
-  display.style.display = "grid";
-  display.style.gridTemplateColumns = "repeat(3, 1fr)";
+  // display.style.display = "grid";
+  display.style.display = "flex";
+  display.style.flexWrap = "wrap";
+  // display.style.gridTemplateColumns = `repeat(${columns}, 1fr)`;
 }
 
 function addElements(display){
@@ -57,7 +63,7 @@ function setup(){
   const numberOfDisplays = 9;
   const columns = 3;
   const rows = Math.ceil(numberOfDisplays / columns);
-  const margin = 20;
+  const margin = 40;
   const displaySize = {
     width: (window.innerWidth - margin * (columns + 1)) / columns,
     height: (window.innerHeight - margin * (rows + 1)) / rows,
